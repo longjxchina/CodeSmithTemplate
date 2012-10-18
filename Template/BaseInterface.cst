@@ -1,0 +1,62 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ Template Language="C#" TargetLanguage="C#" Src="NHibernateHelper.cs" Inherits="NHibernateHelper" %>
+
+<%@ Property Category="Base" Name="BaseNameSpace" Type="System.String"%>
+<%@ Property Category="Base" Name="Module" Type="System.String" Default="Model"%>
+<%@ Property Category="FileHeader" Name="SystemCode" Type="String"%>
+<%@ Property Category="FileHeader" Name="SystemName" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentCode" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentName" Type="String" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper" Path="Common" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper.NHibernate" Path="Common" %>
+
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper.NHibernate" %>
+
+/*
+版权所有：版权所有(C) <%= DateTime.Now.Year.ToString() %>
+文件名称：IBase<%= Module %>.cs
+系统编号：<%= SystemCode %>
+系统名称：<%= SystemName %>
+组件编号：<%= ComponentCode %>
+组件名称：<%= ComponentName %>
+设计作者：自动生成
+完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+内容摘要：IBase<%= Module %>基接口
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Linq.Expressions;
+
+namespace <%= BaseNameSpace %>.<%= Module %>
+{
+    /// <summary>
+    /// 接口名称：IBase<%= Module %>
+    /// 完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+    /// 编码作者：自动生成
+    /// 内容摘要：包含操作的接口
+    /// </summary>    
+    public interface IBase<%= Module %>
+    {
+        #region 自动生成
+        object Add<T>(T model) where T : class;        
+        void Update<T>(T model) where T : class;
+        void Delete<T>(T model) where T : class;
+        bool IsExists<T>(Expression<Func<T, bool>> where) where T : class;
+        IList<T> GetList<T>(Expression<Func<T, bool>> condition) where T : class;
+        IList<T> GetList<T>(Expression<Func<T, bool>> where, int pageIndex, int pageSize, out int rowCount) where T : class;
+        IList<T> GetList<T>(Expression<Func<T, bool>> where, int pageIndex, int pageSize, out int rowCount, out int pageCount) where T : class;
+        #endregion
+    }
+}

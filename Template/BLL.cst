@@ -1,0 +1,158 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ Template Language="C#" TargetLanguage="C#" Src="NHibernateHelper.cs" Inherits="NHibernateHelper" %>
+
+<%@ Property Category="Base" Name="BaseNameSpace" Type="System.String"%>
+<%@ Property Category="Base" Name="Module" Type="System.String" Default="DAL"%>
+<%@ Property Category="Base" Name="EntityModule" Type="System.String" Default="Model"%>
+<%@ Property Category="Base" Name="DataModule" Type="System.String" Default="DAL"%>
+<%@ Property Category="Base" Name="Table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="FileHeader" Name="SystemCode" Type="String"%>
+<%@ Property Category="FileHeader" Name="SystemName" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentCode" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentName" Type="String" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper" Path="Common" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper.NHibernate" Path="Common" %>
+
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper.NHibernate" %>
+
+<% string entity = Table.Name;
+   string className = entity + Module;    
+    %>
+/*
+版权所有：版权所有(C) <%= DateTime.Now.Year.ToString() %>
+文件名称：<%= className %>.cs
+系统编号：<%= SystemCode %>
+系统名称：<%= SystemName %>
+组件编号：<%= ComponentCode %>
+组件名称：<%= ComponentName %>
+设计作者：自动生成
+完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+内容摘要：<%= className %>业务类
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Linq.Expressions;
+using System.Collections;
+
+using <%= BaseNameSpace %>.<%= EntityModule %>;
+using <%= BaseNameSpace %>.<%= DataModule %>;
+
+namespace <%= BaseNameSpace %>.<%= Module %>
+{
+    /// <summary>
+    /// 类 名 称：<%= className %>
+    /// 完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+    /// 编码作者：自动生成
+    /// 内容摘要：包含接口操作的实现
+    /// </summary>    
+    public class <%= className %> : I<%= className %>
+    {
+        I<%= entity %><%= DataModule %> dal = new <%= entity %><%= DataModule %>();
+        
+        #region 自动生成
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="model">实体</param>
+        /// <returns>主键值</returns>
+        public object Add(<%= entity %> model)
+        {
+            return dal.Add<<%= entity %>>(model);
+        }
+        
+        /// <summary>
+        /// 获取实体
+        /// </summary>
+        /// <param name="key">关键字值</param>
+        /// <returns>实体</returns>
+        public <%= entity %> GetModel(<%= Table.PrimaryKey.MemberColumns[0].SystemType %> key)
+        {
+            IList<<%= entity %>> lstData = dal.GetList<<%= entity %>>(m => m.<%= Table.PrimaryKey.MemberColumns[0].Name %> == key);
+
+            if (lstData != null && lstData.Count > 0)
+            {
+                return lstData[0];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        /// <param name="model">实体</param>
+        public void Update(<%= entity %> model)
+        {
+            dal.Update<<%= entity %>>(model);
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="model">实体</param>
+        public void Delete(<%= entity %> model)
+        {
+            dal.Delete<<%= entity %>>(model);
+        }
+
+        /// <summary>
+        /// 判断是否存在
+        /// </summary>
+        /// <param name="condition">判断条件</param>
+        /// <returns></returns>
+        public bool IsExists(Expression<Func<<%= entity %>, bool>> condition)
+        {
+            return dal.IsExists<<%= entity %>>(condition);
+        }
+
+        /// <summary>
+        /// 获取列表
+        /// </summary>
+        /// <param name="condition">过滤条件</param>
+        /// <returns>数据列表</returns>
+        public IList<<%= entity %>> GetList(Expression<Func<<%= entity %>, bool>> condition)
+        {
+            return dal.GetList<<%= entity %>>(condition);
+        }
+        
+        /// <summary>
+        /// 分页获取列表
+        /// </summary>
+        /// <param name="condition">过滤条件</param>
+        /// <param name="pageIndex">当前页</param>
+        /// <param name="pageSize">页大小</param>
+        /// <param name="rowCount">总记录数</param>        
+        /// <returns>数据列表</returns>
+        public IList<<%= entity %>> GetList(Expression<Func<<%= entity %>, bool>> condition, int pageIndex, int pageSize, out int rowCount)
+        {
+            return dal.GetList<<%= entity %>>(condition, pageIndex, pageSize, out rowCount);
+        }
+
+        /// <summary>
+        /// 分页获取列表
+        /// </summary>
+        /// <param name="condition">过滤条件</param>
+        /// <param name="pageIndex">当前页</param>
+        /// <param name="pageSize">页大小</param>
+        /// <param name="rowCount">总记录数</param>
+        /// <param name="pageCount">总页数</param>
+        /// <returns>数据列表</returns>
+        public IList<<%= entity %>> GetList(Expression<Func<<%= entity %>, bool>> condition, int pageIndex, int pageSize, out int rowCount, out int pageCount)
+        {
+            return dal.GetList<<%= entity %>>(condition, pageIndex, pageSize, out rowCount, out pageCount);
+        }
+        #endregion
+    }
+}

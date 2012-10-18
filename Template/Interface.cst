@@ -1,0 +1,73 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ Template Language="C#" TargetLanguage="C#" Src="NHibernateHelper.cs" Inherits="NHibernateHelper" %>
+
+<%@ Property Category="Base" Name="BaseNameSpace" Type="System.String"%>
+<%@ Property Category="Base" Name="Module" Type="System.String" Default="Model"%>
+<%@ Property Category="Base" Name="EntityModule" Type="System.String" Default="Model"%>
+<%@ Property Category="Base" Name="Table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="Base" Name="IsDataModule" Type="System.Boolean"%>
+<%@ Property Category="FileHeader" Name="SystemCode" Type="String"%>
+<%@ Property Category="FileHeader" Name="SystemName" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentCode" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentName" Type="String" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper" Path="Common" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper.NHibernate" Path="Common" %>
+
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper.NHibernate" %>
+
+<% MemberColumnSchema keyColumn = Table.PrimaryKey.MemberColumns[0]; 
+   string entity = Table.Name.ToString();%>
+/*
+版权所有：版权所有(C) <%= DateTime.Now.Year.ToString() %>
+文件名称：I<%= Table.Name.ToString() %><%= Module %>.cs
+系统编号：<%= SystemCode %>
+系统名称：<%= SystemName %>
+组件编号：<%= ComponentCode %>
+组件名称：<%= ComponentName %>
+设计作者：自动生成
+完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+内容摘要：I<%= Table.Name %><%= Module %>接口
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq.Expressions;
+
+using <%= BaseNameSpace %>.<%= EntityModule %>;
+
+namespace <%= BaseNameSpace %>.<%= Module %>
+{
+    /// <summary>
+    /// 接口名称：I<%= Table.Name %><%= Module %>
+    /// 完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+    /// 编码作者：自动生成
+    /// 内容摘要：包含操作的接口
+    /// </summary>    
+    public interface I<%= Table.Name %><%= Module %><%= IsDataModule ? " : IBase" + Module : string.Empty %>
+    {
+        <% if (!IsDataModule) 
+        {%>
+        #region 自动生成
+        object Add(<%= entity %> model);
+        <%= entity %> GetModel(<%= Table.PrimaryKey.MemberColumns[0].SystemType %> key);
+        void Update(<%= entity %> model);
+        void Delete(<%= entity %> model);
+        bool IsExists(Expression<Func<<%= entity %>, bool>> condition);
+        IList<<%= entity %>> GetList(Expression<Func<<%= entity %>, bool>> condition);
+        IList<<%= entity %>> GetList(Expression<Func<<%= entity %>, bool>> condition, int pageIndex, int pageSize, out int rowCount);
+        IList<<%= entity %>> GetList(Expression<Func<<%= entity %>, bool>> condition, int pageIndex, int pageSize, out int rowCount, out int pageCount);
+        #endregion
+        <% 
+        }%>
+    }
+}    

@@ -1,0 +1,275 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ Template Language="C#" TargetLanguage="Text" Src="NHibernateHelper.cs" Inherits="NHibernateHelper" %>
+
+<%@ Property Category="1. Common" Name="BaseNameSpace" Type="System.String" Description="基命名空间"%>
+<%@ Property Category="1. Common" Name="Tables" Type="SchemaExplorer.TableSchemaCollection" Description="数据表"%>
+<%@ Property Category="1. Common" Name="SystemCode" Type="String" Description="系统编号"%>
+<%@ Property Category="1. Common" Name="SystemName" Type="String" Description="系统名称" %>
+<%@ Property Category="1. Common" Name="ComponentCode" Type="String" Description="组件编号" %>
+<%@ Property Category="1. Common" Name="ComponentName" Type="String" Description="组件名称" %>
+<%@ Property Category="2. Output" Name="OutputDir" Type="String" Description="输出文件夹"%>
+
+<%-- 实体模板属性 开始 --%>
+<%@ Property Category="3. Entity" Name="EntityModule" Type="System.String" Default="Model" Description="实体模块"%>
+<%-- 实体模板属性 结束 --%>
+
+<%-- 实体模板属性 开始 --%>
+<%@ Property Category="4. HBM" Name="HbmDir" Type="System.String" Default="Mappings" Description="配置文件目录（基于实体目录）"%>
+<%-- 实体模板属性 结束 --%>
+
+<%-- DAL模板属性 开始 --%>
+<%@ Property Category="5. DataAccess" Name="DataModule" Type="System.String" Default="" Description="数据模块"%>
+<%-- DAL模板属性 结束 --%>
+
+<%-- BLL模板属性 开始 --%>
+<%@ Property Category="6. Business" Name="BusinessModule" Type="System.String" Default="" Description="业务模块"%>
+<%-- BLL模板属性 结束 --%>
+
+<%@ Register Name="Entity" Template="Entity.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="HBM" Template="Hbm.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="BaseInterface" Template="BaseInterface.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="BaseDAL" Template="BaseDALImplemention.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="Interface" Template="Interface.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="DAL" Template="DAL.cst" MergeProperties="False" ExcludeProperties="" %>
+<%@ Register Name="BLL" Template="BLL.cst" MergeProperties="False" ExcludeProperties="" %>
+
+<%
+    Generate();
+%>
+<script runat="template">
+    private void Generate()
+    {
+        // 实体模板 开始
+        RenderEntity();
+        // 实体模板 结束
+        
+        // hmb模板 开始
+        RenderHBM();
+        // hmb模板 结束
+        
+        #region DAL层公用接口
+        // DAL层公用接口
+        RenderBaseInterface();
+        
+        // DAL层公用接口实现 
+        RenderBaseDAL();    
+        #endregion
+        
+        #region 实体相关的DAL层接口及实现，BLL层接口及实现
+        RenderEntityInterface();
+        RenderEntityDAL();
+        RenderEntityBLL();
+        #endregion
+    }
+    
+    /// <summary>
+    /// 加载实体模板
+    /// </summary>
+    private void RenderEntity()
+    {
+        Entity entityTemplate = this.Create<Entity>();
+    
+        entityTemplate.SetProperty("BaseNameSpace", BaseNameSpace);
+        entityTemplate.SetProperty("Module", EntityModule);        
+        entityTemplate.SetProperty("SystemCode", SystemCode);
+        entityTemplate.SetProperty("SystemName", SystemName);
+        entityTemplate.SetProperty("ComponentCode", ComponentCode);
+        entityTemplate.SetProperty("ComponentName", ComponentName);
+        
+        string fileName;        
+        string filePath;
+            
+        foreach(TableSchema table in Tables)
+        {
+            entityTemplate.SetProperty("Table", table);
+            fileName = table.Name + ".cs";
+            filePath = Path.Combine(EntityModule, fileName);
+        
+            WriteToFile(filePath, entityTemplate);
+        }
+    }
+    
+    /// <summary>
+    /// 生成配置
+    /// </summary>
+    private void RenderHBM()
+    {
+        HBM hbmTmpl = this.Create<HBM>();
+        
+        hbmTmpl.BaseNameSpace = BaseNameSpace;
+        hbmTmpl.EntityModule = EntityModule;
+        
+        string filePath;
+        string fileName;
+            
+        foreach(TableSchema table in Tables)
+        {
+            hbmTmpl.Table = table;
+            fileName = table.Name + ".hbm.xml";
+            filePath = Path.Combine(EntityModule, HbmDir, fileName);
+        
+            WriteToFile(filePath, hbmTmpl);
+        }
+    }
+    
+    /// <summary>
+    /// 加载Base接口
+    /// </summary>
+    private void RenderBaseInterface()
+    {
+        RenderBaseInterface(DataModule);
+    }
+    
+    /// <summary>
+    /// 加载具体接口
+    /// </summary>
+    private void RenderEntityInterface()
+    {
+        this.RenderInterface(DataModule, true);
+        this.RenderInterface(BusinessModule, false);
+    }
+    
+    private void RenderBaseDAL()
+    {
+        BaseDAL tmpl = this.Create<BaseDAL>();
+        
+        tmpl.BaseNameSpace = BaseNameSpace;
+        tmpl.Module = DataModule;        
+        tmpl.SystemCode = SystemCode;
+        tmpl.SystemName = SystemName;
+        tmpl.ComponentCode = ComponentCode;
+        tmpl.ComponentName = ComponentName;
+        
+        string filePath;
+        string fileName;
+        
+        fileName = "Base" + DataModule + ".cs";
+        filePath = Path.Combine(DataModule, fileName);
+        
+        WriteToFile(filePath, tmpl);
+    }
+    
+    private void RenderEntityDAL()
+    {
+        DAL tmpl = this.Create<DAL>();
+        
+        tmpl.BaseNameSpace = BaseNameSpace;
+        tmpl.Module = DataModule;
+        tmpl.SystemCode = SystemCode;
+        tmpl.SystemName = SystemName;
+        tmpl.ComponentCode = ComponentCode;
+        tmpl.ComponentName = ComponentName;
+        
+        string filePath;
+        string fileName;
+            
+        foreach(TableSchema table in Tables)
+        {
+            tmpl.Table = table;
+            fileName = table.Name + DataModule + ".cs";
+            filePath = Path.Combine(DataModule, fileName);
+        
+            WriteToFile(filePath, tmpl);
+        }
+    }
+    
+    private void RenderEntityBLL()
+    {
+        BLL tmpl = this.Create<BLL>();
+        
+        tmpl.BaseNameSpace = BaseNameSpace;
+        tmpl.Module = BusinessModule;
+        tmpl.SystemCode = SystemCode;
+        tmpl.SystemName = SystemName;
+        tmpl.ComponentCode = ComponentCode;
+        tmpl.ComponentName = ComponentName;
+        
+        string filePath;
+        string fileName;
+            
+        foreach(TableSchema table in Tables)
+        {
+            tmpl.Table = table;
+            fileName = table.Name + BusinessModule + ".cs";
+            filePath = Path.Combine(BusinessModule, fileName);
+        
+            WriteToFile(filePath, tmpl);
+        }    
+    }
+    
+    /// <summary>
+    /// 加载基接口
+    /// </summary>
+    /// <param name="module"></param>
+    private void RenderBaseInterface(string module)
+    {
+        BaseInterface interfaceTmpl = this.Create<BaseInterface>();
+        
+        interfaceTmpl.BaseNameSpace = BaseNameSpace;
+        interfaceTmpl.Module = module;        
+        interfaceTmpl.SystemCode = SystemCode;
+        interfaceTmpl.SystemName = SystemName;
+        interfaceTmpl.ComponentCode = ComponentCode;
+        interfaceTmpl.ComponentName = ComponentName;
+        
+        string filePath;
+        string fileName;
+        
+        fileName = "IBase" + module + ".cs";
+        filePath = Path.Combine(module, fileName);
+        
+        WriteToFile(filePath, interfaceTmpl);
+    }
+    
+    /// <summary>
+    /// 生成接口
+    /// </summary>
+    private void RenderInterface(string module, bool isDataModule)
+    {
+        Interface interfaceTmpl = this.Create<Interface>();
+        
+        interfaceTmpl.BaseNameSpace = BaseNameSpace;
+        interfaceTmpl.Module = module;
+        interfaceTmpl.EntityModule = EntityModule;
+        interfaceTmpl.SystemCode = SystemCode;
+        interfaceTmpl.SystemName = SystemName;
+        interfaceTmpl.ComponentCode = ComponentCode;
+        interfaceTmpl.ComponentName = ComponentName;        
+        interfaceTmpl.IsDataModule = isDataModule;
+        
+        string filePath;
+        string fileName;
+            
+        foreach(TableSchema table in Tables)
+        {
+            interfaceTmpl.Table = table;
+            fileName = "I" + table.Name + module + ".cs";
+            filePath = Path.Combine(module, fileName);
+        
+            WriteToFile(filePath, interfaceTmpl);
+        }
+    }    
+    
+    private OutputFile GetOutputFile(string fileSubPath)
+    {
+        string outputDir = GetFolder(OutputDir.Trim());
+        string filePath;
+        
+        filePath = Path.Combine(outputDir, fileSubPath);        
+        return GetOutputFile(filePath, null, "BuildAction", 3);
+    }
+    
+    /// <summary>
+    /// 写入文件
+    /// </summary>
+    /// <param name="fileSubPath"></param>
+    /// <param name="tmpl"></param>
+    private void WriteToFile(string fileSubPath, CodeTemplate tmpl)
+    {
+        tmpl.RenderToFile(GetOutputFile(fileSubPath), true);
+    }
+</script>

@@ -1,0 +1,59 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ Template Language="C#" TargetLanguage="C#" Src="NHibernateHelper.cs" Inherits="NHibernateHelper" %>
+
+<%@ Property Category="Base" Name="BaseNameSpace" Type="System.String"%>
+<%@ Property Category="Base" Name="Module" Type="System.String" Default="DAL"%>
+<%@ Property Category="Base" Name="EntityModule" Type="System.String" Default="Model"%>
+<%@ Property Category="Base" Name="Table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="FileHeader" Name="SystemCode" Type="String"%>
+<%@ Property Category="FileHeader" Name="SystemName" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentCode" Type="String" %>
+<%@ Property Category="FileHeader" Name="ComponentName" Type="String" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper" Path="Common" %>
+<%@ Assembly Name="CodeSmith.SchemaHelper.NHibernate" Path="Common" %>
+
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper" %>
+<%@ Import Namespace="CodeSmith.SchemaHelper.NHibernate" %>
+
+<% string className = Table.Name + Module; %>
+/*
+版权所有：版权所有(C) <%= DateTime.Now.Year.ToString() %>
+文件名称：<%= className %>.cs
+系统编号：<%= SystemCode %>
+系统名称：<%= SystemName %>
+组件编号：<%= ComponentCode %>
+组件名称：<%= ComponentName %>
+设计作者：自动生成
+完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+内容摘要：<%= Table.Name %><%= Module %>数据类
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq.Expressions;
+
+using NHibernate;
+
+using <%= BaseNameSpace %>.<%= EntityModule %>;
+
+namespace <%= BaseNameSpace %>.<%= Module %>
+{
+    /// <summary>
+    /// 类 名 称：<%= className %>
+    /// 完成日期：<%= DateTime.Now.ToString("yyyy-MM-dd") %>
+    /// 编码作者：自动生成
+    /// 内容摘要：包含接口操作的实现
+    /// </summary>    
+    public class <%= className %> : Base<%= Module %>, I<%= className %>
+    {
+    }
+}
